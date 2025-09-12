@@ -19,6 +19,10 @@ export default function App() {
     );
   }
 
+  function handleClearList() {
+    setItems([]);
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -27,6 +31,7 @@ export default function App() {
         items={items}
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
+        handleClearList={handleClearList}
       />
       <Stats items={items} />
     </div>
@@ -71,11 +76,26 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items, onDeleteItem, onToggleItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem, handleClearList }) {
+  const [sortBy, setSortBy] = useState("input");
+
+  let sortedItems;
+  if (sortBy === "input") sortedItems = items;
+
+  if (sortBy === "description")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+
+  if (sortBy === "packed")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
+
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item
             key={item.id}
             item={item}
@@ -84,6 +104,18 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
           />
         ))}
       </ul>
+      <div
+        className="actions"
+        onChange={(e) => {
+          setSortBy(e.target.value);
+        }}>
+        <select value={sortBy}>
+          <option value="input">Sort by input order</option>
+          <option value="description">Sort by description order</option>
+          <option value="packed">Sort by packed order</option>
+        </select>
+        <button onClick={handleClearList}>clear list</button>
+      </div>
     </div>
   );
 }
