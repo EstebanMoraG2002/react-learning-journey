@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./styles.css";
 
 const faqs = [
@@ -24,5 +25,30 @@ export default function App() {
 }
 
 function Accordion() {
-  return <div>TODO</div>;
+  return (
+    <div className="accordion">
+      {faqs.map((faq, i) => (
+        <Item key={i} num={i + 1} title={faq.title} text={faq.text} />
+      ))}
+    </div>
+  );
+}
+
+function Item({ num, title, text }) {
+  const [display, setDisplay] = useState("-");
+
+  function handleDisplay() {
+    setDisplay(display === "-" ? "+" : "-");
+  }
+
+  return (
+    <div className={`item ${display === "+" ? "open" : ""}`}>
+      <em className="number">{num.toString().padStart(2, "0")}</em>
+      <em className="title">{title}</em>
+      <em className="icon" onClick={handleDisplay}>
+        {display}
+      </em>
+      {display === "+" && <p className="content-box">{text}</p>}
+    </div>
+  );
 }
